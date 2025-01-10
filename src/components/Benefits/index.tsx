@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import ImageComparisonSlider from '../ImageComparisonSlider';
 import { CheckCircleOutline } from '@mui/icons-material';
+import ContactDialog from '../ContactDialog';
 
 const IMAGES = {
   DIRTY: `${process.env.PUBLIC_URL}/dirty-panels.jpg`,
@@ -232,6 +233,8 @@ const itemVariants = {
 const Benefits: React.FC = () => {
   const { t } = useTranslation();
   const [subscriptionType, setSubscriptionType] = useState<'onetime' | 'yearly'>('onetime');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
 
   const handleSubscriptionChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -240,6 +243,11 @@ const Benefits: React.FC = () => {
     if (newSubscription !== null) {
       setSubscriptionType(newSubscription);
     }
+  };
+
+  const handleGetStarted = (planTitle: string) => {
+    setSelectedPlan(planTitle);
+    setDialogOpen(true);
   };
 
   const plans = [
@@ -409,7 +417,7 @@ const Benefits: React.FC = () => {
                             color="primary"
                             size="large"
                             fullWidth
-                            href="#contact"
+                            onClick={() => handleGetStarted(plan.title)}
                             sx={{ mt: 3 }}
                           >
                             Get Started
@@ -429,6 +437,12 @@ const Benefits: React.FC = () => {
           </Grid>
         </motion.div>
       </ContentWrapper>
+      <ContactDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        selectedPlan={selectedPlan}
+        subscriptionType={subscriptionType}
+      />
     </BenefitsSection>
   );
 };

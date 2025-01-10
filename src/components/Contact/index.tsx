@@ -1,25 +1,17 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Container,
-  TextField,
-  Button,
-  Grid,
-  Paper,
-} from '@mui/material';
+import React from 'react';
+import { Box, Container, Typography, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
+import { Phone, Email, LocationOn } from '@mui/icons-material';
 
 const ContactSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(6, 0),
   position: 'relative',
   backgroundColor: theme.palette.background.paper,
-  background: `linear-gradient(135deg,
-    ${theme.palette.background.paper},
-    ${theme.palette.primary.light}99,
-    ${theme.palette.background.paper}
+  background: `linear-gradient(135deg, 
+    ${theme.palette.background.paper}, 
+    ${theme.palette.primary.light}10
   )`,
   '&::before': {
     content: '""',
@@ -28,16 +20,10 @@ const ContactSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.1,
+    opacity: 0.3,
     zIndex: 0,
-    backgroundImage: `
-      linear-gradient(45deg, ${theme.palette.primary.main} 25%, transparent 25%),
-      linear-gradient(-45deg, ${theme.palette.primary.main} 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, ${theme.palette.primary.main} 75%),
-      linear-gradient(-45deg, transparent 75%, ${theme.palette.primary.main} 75%)
-    `,
-    backgroundSize: '40px 40px',
-    backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+    backgroundImage: `radial-gradient(${theme.palette.primary.main}10 2px, transparent 2px)`,
+    backgroundSize: '30px 30px',
   }
 }));
 
@@ -46,159 +32,110 @@ const ContentWrapper = styled(Container)(({ theme }) => ({
   zIndex: 1,
 }));
 
-const ContactForm = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  [theme.breakpoints.up('md')]: {
-    padding: theme.spacing(4),
+const ContactInfo = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(2),
+  '& svg': {
+    marginRight: theme.spacing(2),
+    color: theme.palette.primary.main,
+    fontSize: '2rem',
   },
 }));
 
+const ContactText = styled(Typography)(({ theme }) => ({
+  fontSize: '1.1rem',
+  color: theme.palette.text.secondary,
+}));
+
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0, y: 50 },
   visible: {
     opacity: 1,
+    y: 0,
     transition: {
-      duration: 0.6,
+      duration: 0.8,
+      staggerChildren: 0.3,
     },
   },
 };
 
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  panels: string;
-  date: string;
-  comments: string;
-}
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
+};
 
 const Contact: React.FC = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    panels: '',
-    date: '',
-    comments: '',
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
-  };
 
   return (
     <ContactSection id="contact">
-      <ContentWrapper maxWidth="md">
+      <ContentWrapper maxWidth="lg">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <Typography
-            variant="h3"
-            align="center"
-            color="primary"
-            gutterBottom
-            sx={{ mb: 4 }}
-          >
-            {t('contact.start')}
+          <Typography variant="h3" align="center" gutterBottom color="primary">
+            Contact Us
           </Typography>
-          <ContactForm elevation={3}>
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    label={t('contact.fields.name')}
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    type="email"
-                    label={t('contact.fields.email')}
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    label={t('contact.fields.phone')}
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    type="number"
-                    label={t('contact.fields.panels')}
-                    name="panels"
-                    value={formData.panels}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    type="date"
-                    label={t('contact.fields.date')}
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    label={t('contact.fields.comments')}
-                    name="comments"
-                    value={formData.comments}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    fullWidth
-                  >
-                    {t('contact.submit')}
-                  </Button>
-                </Grid>
+          <Typography variant="subtitle1" align="center" gutterBottom color="textSecondary">
+            Have questions? We're here to help!
+          </Typography>
+          <Box sx={{ mt: 6 }}>
+            <Grid container spacing={4} justifyContent="center">
+              <Grid item xs={12} md={4}>
+                <motion.div variants={itemVariants}>
+                  <ContactInfo>
+                    <Phone />
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        Phone
+                      </Typography>
+                      <ContactText>
+                        +46 123 456 789
+                      </ContactText>
+                    </Box>
+                  </ContactInfo>
+                </motion.div>
               </Grid>
-            </form>
-          </ContactForm>
+              <Grid item xs={12} md={4}>
+                <motion.div variants={itemVariants}>
+                  <ContactInfo>
+                    <Email />
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        Email
+                      </Typography>
+                      <ContactText>
+                        info@hydrosol.com
+                      </ContactText>
+                    </Box>
+                  </ContactInfo>
+                </motion.div>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <motion.div variants={itemVariants}>
+                  <ContactInfo>
+                    <LocationOn />
+                    <Box>
+                      <Typography variant="h6" gutterBottom>
+                        Location
+                      </Typography>
+                      <ContactText>
+                        Stockholm, Sweden
+                      </ContactText>
+                    </Box>
+                  </ContactInfo>
+                </motion.div>
+              </Grid>
+            </Grid>
+          </Box>
         </motion.div>
       </ContentWrapper>
     </ContactSection>
