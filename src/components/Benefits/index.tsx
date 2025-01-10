@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Typography, Container, Grid, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Container, Grid, Button, Slider, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -72,25 +72,64 @@ const SubMessageText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const SubscriptionContainer = styled(Box)(({ theme }) => ({
+const PricingContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(6),
   padding: theme.spacing(4),
   backgroundColor: '#fff',
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[8],
-  textAlign: 'center',
-  maxWidth: '600px',
+  maxWidth: '800px',
   margin: '0 auto',
+}));
+
+const PricingTitle = styled(Typography)(({ theme }) => ({
+  textAlign: 'center',
+  marginBottom: theme.spacing(4),
+  fontSize: '2rem',
+  fontWeight: 600,
+}));
+
+const PricingOptionsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: theme.spacing(2),
+  justifyContent: 'center',
+  marginBottom: theme.spacing(4),
+}));
+
+const PricingOption = styled(ToggleButton)(({ theme }) => ({
+  padding: theme.spacing(2, 4),
+  borderRadius: theme.shape.borderRadius,
+  '&.Mui-selected': {
+    backgroundColor: theme.palette.primary.main,
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+}));
+
+const SliderContainer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2, 4),
+  marginBottom: theme.spacing(4),
+}));
+
+const PriceDisplay = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  marginTop: theme.spacing(4),
 }));
 
 const PriceText = styled(Typography)(({ theme }) => ({
   fontSize: '2.5rem',
   fontWeight: 700,
   color: theme.palette.primary.main,
-  marginBottom: theme.spacing(2),
   '& .currency': {
     fontSize: '1.5rem',
     verticalAlign: 'super',
+  },
+  '& .period': {
+    fontSize: '1.2rem',
+    color: theme.palette.text.secondary,
   },
 }));
 
@@ -121,8 +160,33 @@ const itemVariants = {
   },
 };
 
+const PANEL_OPTIONS = [
+  { value: 'small', label: 'Small (1-10 panels)', basePrice: 800 },
+  { value: 'medium', label: 'Medium (11-20 panels)', basePrice: 1200 },
+  { value: 'large', label: 'Large (21-30 panels)', basePrice: 1600 },
+  { value: 'xlarge', label: 'Extra Large (31+ panels)', basePrice: 2000 },
+];
+
 const Benefits: React.FC = () => {
   const { t } = useTranslation();
+  const [selectedSize, setSelectedSize] = useState('small');
+  const [subscriptionMonths, setSubscriptionMonths] = useState(1);
+
+  const handleSizeChange = (event: React.MouseEvent<HTMLElement>, newSize: string) => {
+    if (newSize !== null) {
+      setSelectedSize(newSize);
+    }
+  };
+
+  const handleSubscriptionChange = (event: Event, newValue: number | number[]) => {
+    setSubscriptionMonths(newValue as number);
+  };
+
+  const calculatePrice = () => {
+    const basePrice = PANEL_OPTIONS.find(option => option.value === selectedSize)?.basePrice || 0;
+    const discount = subscriptionMonths === 12 ? 0.15 : 0; // 15% discount for 12-month subscription
+    return basePrice * (1 - discount);
+  };
 
   return (
     <BenefitsSection id="benefits">
@@ -150,36 +214,60 @@ const Benefits: React.FC = () => {
                 <MessageText>
                   Imagine saving hundreds on your energy bills—sounds good, right?
                 </MessageText>
-                <SubMessageText>
-                  Curious? Let's explore your options!
-                </SubMessageText>
               </motion.div>
               <motion.div variants={itemVariants}>
-                <SubscriptionContainer>
-                  <Typography variant="h4" gutterBottom>
-                    Monthly Subscription
-                  </Typography>
-                  <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                    Professional solar panel cleaning service
-                  </Typography>
-                  <PriceText>
-                    <span className="currency">SEK</span> 800
-                    <Typography variant="subtitle1" color="text.secondary" component="span">
-                      /month
+                <PricingContainer>
+                  <PricingTitle>
+                    We've got flexible options just for you. How many panels do you have?
+                  </PricingTitle>
+                  <PricingOptionsContainer>
+                    <ToggleButtonGroup
+                      value={selectedSize}
+                      exclusive
+                      onChange={handleSizeChange}
+                      aria-label="panel size"
+                    >
+                      {PANEL_OPTIONS.map((option) => (
+                        <PricingOption key={option.value} value={option.value}>
+                          {option.label}
+                        </PricingOption>
+                      ))}
+                    </ToggleButtonGroup>
+                  </PricingOptionsContainer>
+                  <SliderContainer>
+                    <Typography gutterBottom>
+                      Subscription Length: {subscriptionMonths === 1 ? 'One-time' : `${subscriptionMonths} months`}
+                      {subscriptionMonths === 12 && ' (15% discount)'}
                     </Typography>
-                  </PriceText>
-                  <Typography variant="body1" color="text.secondary" paragraph>
-                    Regular maintenance to keep your panels at peak efficiency
-                  </Typography>
-                  <SubscriptionButton
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    href="#contact"
-                  >
-                    Get Started
-                  </SubscriptionButton>
-                </SubscriptionContainer>
+                    <Slider
+                      value={subscriptionMonths}
+                      onChange={handleSubscriptionChange}
+                      step={null}
+                      marks={[
+                        { value: 1, label: 'One-time' },
+                        { value: 12, label: '12 months' },
+                      ]}
+                      min={1}
+                      max={12}
+                    />
+                  </SliderContainer>
+                  <PriceDisplay>
+                    <PriceText>
+                      <span className="currency">SEK</span> {calculatePrice()}
+                      <span className="period">
+                        {subscriptionMonths === 1 ? '' : '/month'}
+                      </span>
+                    </PriceText>
+                    <SubscriptionButton
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      href="#contact"
+                    >
+                      Get Started
+                    </SubscriptionButton>
+                  </PriceDisplay>
+                </PricingContainer>
               </motion.div>
             </Grid>
           </Grid>
