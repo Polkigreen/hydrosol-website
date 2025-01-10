@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -18,6 +18,12 @@ const SliderContainer = styled(Box)(({ theme }) => ({
   cursor: 'ew-resize',
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[4],
+  touchAction: 'none',
+  '&:hover': {
+    '& .slider-handle': {
+      transform: 'scale(1.1)',
+    }
+  }
 }));
 
 const Image = styled('img')({
@@ -26,6 +32,9 @@ const Image = styled('img')({
   height: '100%',
   objectFit: 'cover',
   userSelect: 'none',
+  WebkitUserSelect: 'none',
+  msUserSelect: 'none',
+  pointerEvents: 'none',
 });
 
 const Slider = styled(Box)<SliderProps>(({ sliderPosition }) => ({
@@ -36,6 +45,7 @@ const Slider = styled(Box)<SliderProps>(({ sliderPosition }) => ({
   width: '4px',
   backgroundColor: '#fff',
   cursor: 'ew-resize',
+  transition: 'transform 0.2s ease',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -47,7 +57,11 @@ const Slider = styled(Box)<SliderProps>(({ sliderPosition }) => ({
     backgroundColor: '#fff',
     borderRadius: '50%',
     boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+    transition: 'transform 0.2s ease',
   },
+  '&:hover::before': {
+    transform: 'translate(-50%, -50%) scale(1.1)',
+  }
 }));
 
 const ImageOverlay = styled(Box)<{ width: number }>(({ width }) => ({
@@ -67,6 +81,13 @@ const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
 
+  const handleMove = (clientX: number, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const newPosition = (x / rect.width) * 100;
+    setSliderPosition(newPosition);
+  };
+
   const handleMouseDown = () => {
     setIsDragging(true);
   };
@@ -77,21 +98,33 @@ const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-    const newPosition = (x / rect.width) * 100;
-    setSliderPosition(newPosition);
+    handleMove(e.clientX, e.currentTarget);
   };
 
-  React.useEffect(() => {
+  const handleTouchStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    handleMove(e.touches[0].clientX, e.currentTarget);
+  };
+
+  useEffect(() => {
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
     };
 
     window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchend', handleGlobalMouseUp);
+
     return () => {
       window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchend', handleGlobalMouseUp);
     };
   }, []);
 
@@ -102,12 +135,15 @@ const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
     >
       <Image src={beforeImage} alt="Before cleaning" />
       <ImageOverlay width={sliderPosition}>
         <Image src={afterImage} alt="After cleaning" />
       </ImageOverlay>
-      <Slider sliderPosition={sliderPosition} />
+      <Slider sliderPosition={sliderPosition} className="slider-handle" />
     </SliderContainer>
   );
 };
