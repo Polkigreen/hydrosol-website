@@ -6,15 +6,38 @@ import { motion } from 'framer-motion';
 import ImageComparisonSlider from '../ImageComparisonSlider';
 
 const BenefitsSection = styled(Box)(({ theme }) => ({
-  minHeight: '100vh',
-  padding: theme.spacing(10, 0),
+  minHeight: '80vh',
+  padding: theme.spacing(6, 0),
+  position: 'relative',
   backgroundColor: theme.palette.background.default,
+  background: `linear-gradient(45deg, 
+    ${theme.palette.background.default}, 
+    ${theme.palette.primary.light}10
+  )`,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+    zIndex: 0,
+    backgroundImage: `linear-gradient(${theme.palette.primary.main}10 1px, transparent 1px),
+                     linear-gradient(90deg, ${theme.palette.primary.main}10 1px, transparent 1px)`,
+    backgroundSize: '50px 50px',
+  }
+}));
+
+const ContentWrapper = styled(Container)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
 }));
 
 const BenefitText = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
-  fontSize: '1.5rem',
-  lineHeight: 1.6,
+  marginBottom: theme.spacing(3),
+  fontSize: '1.3rem',
+  lineHeight: 1.5,
   color: theme.palette.text.primary,
 }));
 
@@ -44,7 +67,7 @@ const Benefits: React.FC = () => {
 
   return (
     <BenefitsSection id="benefits">
-      <Container maxWidth="lg">
+      <ContentWrapper maxWidth="lg">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -61,7 +84,7 @@ const Benefits: React.FC = () => {
                 <ImageComparisonSlider
                   beforeImage="/dirty-panels.jpg"
                   afterImage="/clean-panels.jpg"
-                  height={400}
+                  height={300}
                 />
               </motion.div>
             </Grid>
@@ -75,7 +98,7 @@ const Benefits: React.FC = () => {
             </Grid>
           </Grid>
         </motion.div>
-      </Container>
+      </ContentWrapper>
     </BenefitsSection>
   );
 };

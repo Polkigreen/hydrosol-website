@@ -5,9 +5,33 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
 const PackagesSection = styled(Box)(({ theme }) => ({
-  minHeight: '100vh',
-  padding: theme.spacing(10, 0),
+  minHeight: '80vh',
+  padding: theme.spacing(6, 0),
+  position: 'relative',
   backgroundColor: theme.palette.background.paper,
+  background: `linear-gradient(180deg,
+    ${theme.palette.background.paper},
+    ${theme.palette.primary.light}15,
+    ${theme.palette.background.paper}
+  )`,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.4,
+    zIndex: 0,
+    backgroundImage: `radial-gradient(${theme.palette.primary.main}10 2px, transparent 2px)`,
+    backgroundSize: '30px 30px',
+    backgroundPosition: '-5px -5px'
+  }
+}));
+
+const ContentWrapper = styled(Container)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
 }));
 
 const PackageCard = styled(Card)(({ theme }) => ({
@@ -16,7 +40,7 @@ const PackageCard = styled(Card)(({ theme }) => ({
   flexDirection: 'column',
   transition: 'transform 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-8px)',
+    transform: 'translateY(-6px)',
   },
 }));
 
@@ -52,7 +76,7 @@ const Packages: React.FC = () => {
 
   return (
     <PackagesSection id="packages">
-      <Container maxWidth="lg">
+      <ContentWrapper maxWidth="lg">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -68,19 +92,19 @@ const Packages: React.FC = () => {
           >
             {t('panelQuestion')}
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {packages.map((pkg) => (
               <Grid item xs={12} sm={6} md={3} key={pkg}>
                 <motion.div variants={cardVariants}>
                   <PackageCard>
                     <PackageContent>
-                      <Typography variant="h4" component="h3" gutterBottom>
+                      <Typography variant="h5" component="h3" gutterBottom>
                         {t(`packages.${pkg}.title`)}
                       </Typography>
-                      <Typography variant="body1" color="text.secondary" paragraph>
+                      <Typography variant="body2" color="text.secondary" paragraph>
                         {t(`packages.${pkg}.description`)}
                       </Typography>
-                      <Typography variant="subtitle1" color="primary">
+                      <Typography variant="subtitle2" color="primary">
                         {t(`packages.${pkg}.range`)}
                       </Typography>
                     </PackageContent>
@@ -89,7 +113,7 @@ const Packages: React.FC = () => {
                         fullWidth
                         variant="contained"
                         color="primary"
-                        size="large"
+                        size="medium"
                         href="#contact"
                       >
                         Let's Book This!
@@ -101,7 +125,7 @@ const Packages: React.FC = () => {
             ))}
           </Grid>
         </motion.div>
-      </Container>
+      </ContentWrapper>
     </PackagesSection>
   );
 };

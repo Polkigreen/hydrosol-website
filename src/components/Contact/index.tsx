@@ -13,14 +13,43 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
 const ContactSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(10, 0),
+  padding: theme.spacing(6, 0),
+  position: 'relative',
   backgroundColor: theme.palette.background.paper,
+  background: `linear-gradient(135deg,
+    ${theme.palette.background.paper},
+    ${theme.palette.primary.light}15,
+    ${theme.palette.background.paper}
+  )`,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+    zIndex: 0,
+    backgroundImage: `
+      linear-gradient(45deg, ${theme.palette.primary.main}08 25%, transparent 25%),
+      linear-gradient(-45deg, ${theme.palette.primary.main}08 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, ${theme.palette.primary.main}08 75%),
+      linear-gradient(-45deg, transparent 75%, ${theme.palette.primary.main}08 75%)
+    `,
+    backgroundSize: '40px 40px',
+    backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+  }
+}));
+
+const ContentWrapper = styled(Container)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
 }));
 
 const ContactForm = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
+  padding: theme.spacing(3),
   [theme.breakpoints.up('md')]: {
-    padding: theme.spacing(6),
+    padding: theme.spacing(4),
   },
 }));
 
@@ -70,7 +99,7 @@ const Contact: React.FC = () => {
 
   return (
     <ContactSection id="contact">
-      <Container maxWidth="md">
+      <ContentWrapper maxWidth="md">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -78,17 +107,17 @@ const Contact: React.FC = () => {
           viewport={{ once: true, amount: 0.3 }}
         >
           <Typography
-            variant="h2"
+            variant="h3"
             align="center"
             color="primary"
             gutterBottom
-            sx={{ mb: 6 }}
+            sx={{ mb: 4 }}
           >
             {t('contact.start')}
           </Typography>
           <ContactForm elevation={3}>
             <form onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
@@ -171,7 +200,7 @@ const Contact: React.FC = () => {
             </form>
           </ContactForm>
         </motion.div>
-      </Container>
+      </ContentWrapper>
     </ContactSection>
   );
 };

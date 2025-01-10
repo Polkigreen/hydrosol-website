@@ -4,12 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 
 const HeroContainer = styled(Box)(({ theme }) => ({
-  height: '100vh',
+  height: '80vh',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   position: 'relative',
-  background: 'linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9))',
+  background: `linear-gradient(135deg, 
+    ${theme.palette.primary.light}15, 
+    ${theme.palette.background.paper}80,
+    ${theme.palette.primary.light}20
+  )`,
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -17,11 +21,23 @@ const HeroContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundImage: 'url(/hero-background.mp4)', // This will be replaced with actual video
+    backgroundImage: 'url(/hero-background.mp4)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     zIndex: -1,
   },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.4,
+    zIndex: -1,
+    backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.palette.primary.main}15 1px, transparent 0)`,
+    backgroundSize: '40px 40px',
+  }
 }));
 
 const ContentContainer = styled(Container)(({ theme }) => ({
@@ -30,9 +46,9 @@ const ContentContainer = styled(Container)(({ theme }) => ({
 }));
 
 const StartButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(4),
-  padding: theme.spacing(2, 6),
-  fontSize: '1.2rem',
+  marginTop: theme.spacing(3),
+  padding: theme.spacing(1.5, 4),
+  fontSize: '1.1rem',
 }));
 
 const Hero: React.FC = () => {

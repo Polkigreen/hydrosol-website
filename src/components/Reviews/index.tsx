@@ -5,13 +5,40 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
 const ReviewsSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(10, 0),
+  padding: theme.spacing(6, 0),
+  position: 'relative',
   backgroundColor: theme.palette.background.default,
+  background: `linear-gradient(-45deg,
+    ${theme.palette.background.default},
+    ${theme.palette.primary.light}10,
+    ${theme.palette.background.default}
+  )`,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+    zIndex: 0,
+    backgroundImage: `
+      radial-gradient(circle at 100% 50%, transparent 20%, ${theme.palette.primary.light}10 21%, ${theme.palette.primary.light}10 34%, transparent 35%, transparent),
+      radial-gradient(circle at 0% 50%, transparent 20%, ${theme.palette.primary.light}10 21%, ${theme.palette.primary.light}10 34%, transparent 35%, transparent)
+    `,
+    backgroundSize: '60px 120px',
+    backgroundPosition: '0 0',
+  }
+}));
+
+const ContentWrapper = styled(Container)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
 }));
 
 const ReviewCard = styled(Card)(({ theme }) => ({
   height: '100%',
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -21,11 +48,11 @@ const ReviewCard = styled(Card)(({ theme }) => ({
 }));
 
 const ReviewAvatar = styled(Avatar)(({ theme }) => ({
-  width: 80,
-  height: 80,
-  marginBottom: theme.spacing(2),
+  width: 60,
+  height: 60,
+  marginBottom: theme.spacing(1.5),
   backgroundColor: theme.palette.primary.main,
-  fontSize: '2rem',
+  fontSize: '1.5rem',
   fontWeight: 'bold',
 }));
 
@@ -89,7 +116,7 @@ const Reviews: React.FC = () => {
 
   return (
     <ReviewsSection id="reviews">
-      <Container maxWidth="lg">
+      <ContentWrapper maxWidth="lg">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -113,7 +140,7 @@ const Reviews: React.FC = () => {
                 sm: 'repeat(2, 1fr)',
                 md: 'repeat(3, 1fr)',
               },
-              gap: 4,
+              gap: 3,
             }}
           >
             {mockReviews.map((review, index) => (
@@ -136,7 +163,7 @@ const Reviews: React.FC = () => {
             ))}
           </Box>
         </motion.div>
-      </Container>
+      </ContentWrapper>
     </ReviewsSection>
   );
 };
