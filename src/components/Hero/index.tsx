@@ -10,9 +10,9 @@ const HeroContainer = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   position: 'relative',
   background: `linear-gradient(135deg, 
-    ${theme.palette.primary.light}15, 
-    ${theme.palette.background.paper}80,
-    ${theme.palette.primary.light}20
+    ${theme.palette.primary.light}99, 
+    ${theme.palette.background.paper}, 
+    ${theme.palette.primary.light}99
   )`,
   '&::before': {
     content: '""',
@@ -33,9 +33,9 @@ const HeroContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.4,
+    opacity: 0.15,
     zIndex: -1,
-    backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.palette.primary.main}15 1px, transparent 0)`,
+    backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.palette.primary.main} 1px, transparent 0)`,
     backgroundSize: '40px 40px',
   }
 }));

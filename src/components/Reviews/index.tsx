@@ -10,7 +10,7 @@ const ReviewsSection = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   background: `linear-gradient(-45deg,
     ${theme.palette.background.default},
-    ${theme.palette.primary.light}10,
+    ${theme.palette.primary.light}99,
     ${theme.palette.background.default}
   )`,
   '&::before': {
@@ -20,11 +20,11 @@ const ReviewsSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 0.1,
     zIndex: 0,
     backgroundImage: `
-      radial-gradient(circle at 100% 50%, transparent 20%, ${theme.palette.primary.light}10 21%, ${theme.palette.primary.light}10 34%, transparent 35%, transparent),
-      radial-gradient(circle at 0% 50%, transparent 20%, ${theme.palette.primary.light}10 21%, ${theme.palette.primary.light}10 34%, transparent 35%, transparent)
+      radial-gradient(circle at 100% 50%, transparent 20%, ${theme.palette.primary.light} 21%, ${theme.palette.primary.light} 34%, transparent 35%, transparent),
+      radial-gradient(circle at 0% 50%, transparent 20%, ${theme.palette.primary.light} 21%, ${theme.palette.primary.light} 34%, transparent 35%, transparent)
     `,
     backgroundSize: '60px 120px',
     backgroundPosition: '0 0',

@@ -11,7 +11,7 @@ const PackagesSection = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   background: `linear-gradient(180deg,
     ${theme.palette.background.paper},
-    ${theme.palette.primary.light}15,
+    ${theme.palette.primary.light}99,
     ${theme.palette.background.paper}
   )`,
   '&::before': {
@@ -21,9 +21,9 @@ const PackagesSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.4,
+    opacity: 0.15,
     zIndex: 0,
-    backgroundImage: `radial-gradient(${theme.palette.primary.main}10 2px, transparent 2px)`,
+    backgroundImage: `radial-gradient(${theme.palette.primary.main} 2px, transparent 2px)`,
     backgroundSize: '30px 30px',
     backgroundPosition: '-5px -5px'
   }

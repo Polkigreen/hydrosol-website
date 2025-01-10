@@ -12,7 +12,7 @@ const BenefitsSection = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   background: `linear-gradient(45deg, 
     ${theme.palette.background.default}, 
-    ${theme.palette.primary.light}10
+    ${theme.palette.primary.light}99
   )`,
   '&::before': {
     content: '""',
@@ -21,10 +21,10 @@ const BenefitsSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 0.1,
     zIndex: 0,
-    backgroundImage: `linear-gradient(${theme.palette.primary.main}10 1px, transparent 1px),
-                     linear-gradient(90deg, ${theme.palette.primary.main}10 1px, transparent 1px)`,
+    backgroundImage: `linear-gradient(${theme.palette.primary.main} 1px, transparent 1px),
+                     linear-gradient(90deg, ${theme.palette.primary.main} 1px, transparent 1px)`,
     backgroundSize: '50px 50px',
   }
 }));

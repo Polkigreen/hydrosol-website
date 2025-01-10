@@ -18,7 +18,7 @@ const ContactSection = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   background: `linear-gradient(135deg,
     ${theme.palette.background.paper},
-    ${theme.palette.primary.light}15,
+    ${theme.palette.primary.light}99,
     ${theme.palette.background.paper}
   )`,
   '&::before': {
@@ -28,13 +28,13 @@ const ContactSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 0.1,
     zIndex: 0,
     backgroundImage: `
-      linear-gradient(45deg, ${theme.palette.primary.main}08 25%, transparent 25%),
-      linear-gradient(-45deg, ${theme.palette.primary.main}08 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, ${theme.palette.primary.main}08 75%),
-      linear-gradient(-45deg, transparent 75%, ${theme.palette.primary.main}08 75%)
+      linear-gradient(45deg, ${theme.palette.primary.main} 25%, transparent 25%),
+      linear-gradient(-45deg, ${theme.palette.primary.main} 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, ${theme.palette.primary.main} 75%),
+      linear-gradient(-45deg, transparent 75%, ${theme.palette.primary.main} 75%)
     `,
     backgroundSize: '40px 40px',
     backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
