@@ -106,7 +106,7 @@ const Benefits: React.FC = () => {
           viewport={{ once: true, amount: 0.3 }}
         >
           <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <motion.div variants={itemVariants}>
                 <BenefitText>{t('didYouKnow')}</BenefitText>
                 <BenefitText>{t('showDifference')}</BenefitText>
@@ -125,14 +125,6 @@ const Benefits: React.FC = () => {
                 <SubMessageText>
                   Curious? Let's explore your options!
                 </SubMessageText>
-              </motion.div>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <motion.div variants={itemVariants}>
-                <BenefitText>{t('savingsBenefit')}</BenefitText>
-                <Typography variant="h3" color="primary" gutterBottom>
-                  {t('exploreOptions')}
-                </Typography>
               </motion.div>
             </Grid>
           </Grid>
