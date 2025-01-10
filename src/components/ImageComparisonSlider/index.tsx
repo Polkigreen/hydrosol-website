@@ -23,6 +23,28 @@ const SliderContainer = styled(Box)(({ theme }) => ({
     '& .slider-handle': {
       transform: 'scale(1.1)',
     }
+  },
+  '&::before': {
+    content: '"Before"',
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
+    color: '#fff',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+    zIndex: 2,
+  },
+  '&::after': {
+    content: '"After"',
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    color: '#fff',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+    zIndex: 2,
   }
 }));
 
@@ -78,7 +100,7 @@ const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
   afterImage,
   height,
 }) => {
-  const [sliderPosition, setSliderPosition] = useState(50);
+  const [sliderPosition, setSliderPosition] = useState(65);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleMove = (clientX: number, element: HTMLElement) => {

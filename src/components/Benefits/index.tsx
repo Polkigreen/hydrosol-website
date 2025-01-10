@@ -46,6 +46,17 @@ const BenefitText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 
+const ComparisonContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  boxShadow: theme.shadows[8],
+  borderRadius: theme.shape.borderRadius,
+  overflow: 'hidden',
+  '& > div': {
+    borderRadius: 0,
+  }
+}));
+
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -86,11 +97,13 @@ const Benefits: React.FC = () => {
                 <BenefitText>{t('showDifference')}</BenefitText>
               </motion.div>
               <motion.div variants={itemVariants}>
-                <ImageComparisonSlider
-                  beforeImage={IMAGES.DIRTY}
-                  afterImage={IMAGES.CLEAN}
-                  height={300}
-                />
+                <ComparisonContainer>
+                  <ImageComparisonSlider
+                    beforeImage={IMAGES.DIRTY}
+                    afterImage={IMAGES.CLEAN}
+                    height={400}
+                  />
+                </ComparisonContainer>
               </motion.div>
             </Grid>
             <Grid item xs={12} md={6}>
