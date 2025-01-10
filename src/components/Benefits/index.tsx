@@ -57,6 +57,21 @@ const ComparisonContainer = styled(Box)(({ theme }) => ({
   }
 }));
 
+const MessageText = styled(Typography)(({ theme }) => ({
+  fontSize: '1.5rem',
+  fontWeight: 500,
+  textAlign: 'center',
+  marginTop: theme.spacing(3),
+  color: theme.palette.primary.main,
+}));
+
+const SubMessageText = styled(Typography)(({ theme }) => ({
+  fontSize: '1.2rem',
+  textAlign: 'center',
+  marginTop: theme.spacing(1),
+  color: theme.palette.text.secondary,
+}));
+
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -104,6 +119,12 @@ const Benefits: React.FC = () => {
                     height={400}
                   />
                 </ComparisonContainer>
+                <MessageText>
+                  Imagine saving hundreds on your energy bills—sounds good, right?
+                </MessageText>
+                <SubMessageText>
+                  Curious? Let's explore your options!
+                </SubMessageText>
               </motion.div>
             </Grid>
             <Grid item xs={12} md={6}>
