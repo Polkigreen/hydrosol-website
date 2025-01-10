@@ -17,9 +17,9 @@ const BenefitsSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(6, 0),
   position: 'relative',
   backgroundColor: theme.palette.background.default,
-  background: `linear-gradient(45deg, 
+  background: `linear-gradient(to bottom, 
     ${theme.palette.background.default}, 
-    ${theme.palette.primary.light}99
+    ${theme.palette.background.paper}
   )`,
   '&::before': {
     content: '""',
@@ -28,7 +28,7 @@ const BenefitsSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.1,
+    opacity: 0.03,
     zIndex: 0,
     backgroundImage: `linear-gradient(${theme.palette.primary.main} 1px, transparent 1px),
                      linear-gradient(90deg, ${theme.palette.primary.main} 1px, transparent 1px)`,
@@ -95,9 +95,9 @@ interface PricingCardProps {
 
 const PricingCard = styled(Box)<PricingCardProps>(({ theme, selected }) => ({
   padding: theme.spacing(4),
-  backgroundColor: selected ? theme.palette.primary.light + '10' : '#fff',
+  backgroundColor: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
-  border: `2px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
+  border: `1px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
   height: '100%',
   position: 'relative',
   transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
@@ -112,7 +112,7 @@ const PopularBadge = styled(Box)(({ theme }) => ({
   top: -15,
   right: 20,
   backgroundColor: theme.palette.primary.main,
-  color: '#fff',
+  color: theme.palette.secondary.main,
   padding: theme.spacing(0.5, 2),
   borderRadius: 20,
   fontSize: '0.9rem',
@@ -162,9 +162,9 @@ const SubscriptionButton = styled(Button)(({ theme }) => ({
 
 const BenefitCard = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
-  backgroundColor: '#fff',
+  backgroundColor: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[2],
+  border: `1px solid ${theme.palette.divider}`,
   textAlign: 'center',
   height: '100%',
   transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
@@ -198,10 +198,10 @@ const SubscriptionToggle = styled(ToggleButtonGroup)(({ theme }) => ({
   marginBottom: theme.spacing(4),
   '& .MuiToggleButton-root': {
     padding: theme.spacing(1, 4),
-    border: `2px solid ${theme.palette.primary.main}`,
+    border: `1px solid ${theme.palette.primary.main}`,
     '&.Mui-selected': {
       backgroundColor: theme.palette.primary.main,
-      color: '#fff',
+      color: theme.palette.secondary.main,
       '&:hover': {
         backgroundColor: theme.palette.primary.dark,
       },

@@ -3,7 +3,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
+  DialogActions as MuiDialogActions,
   TextField,
   Button,
   Box,
@@ -21,6 +21,21 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(2),
     maxWidth: 500,
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+  },
+  '& .MuiTextField-root': {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: theme.palette.divider,
+      },
+      '&:hover fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
+    },
   },
 }));
 
@@ -28,6 +43,16 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   right: theme.spacing(1),
   top: theme.spacing(1),
+  color: theme.palette.text.secondary,
+  '&:hover': {
+    color: theme.palette.primary.main,
+  },
+}));
+
+const StyledDialogActions = styled(MuiDialogActions)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: `1px solid ${theme.palette.divider}`,
+  marginTop: theme.spacing(2),
 }));
 
 interface ContactDialogProps {
@@ -37,13 +62,22 @@ interface ContactDialogProps {
   subscriptionType?: 'onetime' | 'yearly';
 }
 
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  panels: string;
+  date: Date | null;
+  comments: string;
+}
+
 const ContactDialog: React.FC<ContactDialogProps> = ({
   open,
   onClose,
   selectedPlan,
   subscriptionType,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
@@ -121,7 +155,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
             <DatePicker
               label="Preferred Date"
               value={formData.date}
-              onChange={(newValue) => setFormData(prev => ({ ...prev, date: newValue }))}
+              onChange={(newValue: Date | null) => setFormData(prev => ({ ...prev, date: newValue }))}
               sx={{ mt: 2, width: '100%' }}
             />
             <TextField
@@ -136,7 +170,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
             />
           </Box>
         </DialogContent>
-        <DialogActions>
+        <StyledDialogActions>
           <Button onClick={onClose} color="primary">
             Cancel
           </Button>
@@ -147,7 +181,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
           >
             Submit
           </Button>
-        </DialogActions>
+        </StyledDialogActions>
       </StyledDialog>
     </LocalizationProvider>
   );

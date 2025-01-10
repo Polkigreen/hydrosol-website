@@ -9,9 +9,9 @@ const ContactSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(6, 0),
   position: 'relative',
   backgroundColor: theme.palette.background.paper,
-  background: `linear-gradient(135deg, 
+  background: `linear-gradient(to bottom, 
     ${theme.palette.background.paper}, 
-    ${theme.palette.primary.light}10
+    ${theme.palette.background.default}
   )`,
   '&::before': {
     content: '""',
@@ -20,10 +20,11 @@ const ContactSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 0.03,
     zIndex: 0,
-    backgroundImage: `radial-gradient(${theme.palette.primary.main}10 2px, transparent 2px)`,
-    backgroundSize: '30px 30px',
+    backgroundImage: `linear-gradient(${theme.palette.primary.main} 1px, transparent 1px),
+                     linear-gradient(90deg, ${theme.palette.primary.main} 1px, transparent 1px)`,
+    backgroundSize: '50px 50px',
   }
 }));
 
@@ -36,6 +37,15 @@ const ContactInfo = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   marginBottom: theme.spacing(2),
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.default,
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[4],
+  },
   '& svg': {
     marginRight: theme.spacing(2),
     color: theme.palette.primary.main,
