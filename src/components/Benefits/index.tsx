@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Container, Grid } from '@mui/material';
+import { Box, Typography, Container, Grid, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -72,6 +72,34 @@ const SubMessageText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const SubscriptionContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(6),
+  padding: theme.spacing(4),
+  backgroundColor: '#fff',
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[8],
+  textAlign: 'center',
+  maxWidth: '600px',
+  margin: '0 auto',
+}));
+
+const PriceText = styled(Typography)(({ theme }) => ({
+  fontSize: '2.5rem',
+  fontWeight: 700,
+  color: theme.palette.primary.main,
+  marginBottom: theme.spacing(2),
+  '& .currency': {
+    fontSize: '1.5rem',
+    verticalAlign: 'super',
+  },
+}));
+
+const SubscriptionButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  padding: theme.spacing(1.5, 6),
+  fontSize: '1.2rem',
+}));
+
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -125,6 +153,33 @@ const Benefits: React.FC = () => {
                 <SubMessageText>
                   Curious? Let's explore your options!
                 </SubMessageText>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <SubscriptionContainer>
+                  <Typography variant="h4" gutterBottom>
+                    Monthly Subscription
+                  </Typography>
+                  <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                    Professional solar panel cleaning service
+                  </Typography>
+                  <PriceText>
+                    <span className="currency">SEK</span> 800
+                    <Typography variant="subtitle1" color="text.secondary" component="span">
+                      /month
+                    </Typography>
+                  </PriceText>
+                  <Typography variant="body1" color="text.secondary" paragraph>
+                    Regular maintenance to keep your panels at peak efficiency
+                  </Typography>
+                  <SubscriptionButton
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    href="#contact"
+                  >
+                    Get Started
+                  </SubscriptionButton>
+                </SubscriptionContainer>
               </motion.div>
             </Grid>
           </Grid>
