@@ -167,6 +167,38 @@ const PANEL_OPTIONS = [
   { value: 'xlarge', label: 'Extra Large (31+ panels)', basePrice: 2000 },
 ];
 
+const BenefitCard = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(3),
+  backgroundColor: '#fff',
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[2],
+  textAlign: 'center',
+  height: '100%',
+  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[4],
+  },
+}));
+
+const BenefitCardTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.4rem',
+  fontWeight: 600,
+  color: theme.palette.primary.main,
+  marginBottom: theme.spacing(2),
+}));
+
+const BenefitCardText = styled(Typography)(({ theme }) => ({
+  fontSize: '1rem',
+  color: theme.palette.text.secondary,
+  lineHeight: 1.6,
+}));
+
+const BenefitsGrid = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(6),
+}));
+
 const Benefits: React.FC = () => {
   const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState('small');
@@ -214,6 +246,40 @@ const Benefits: React.FC = () => {
                 <MessageText>
                   Imagine saving hundreds on your energy bills—sounds good, right?
                 </MessageText>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <BenefitsGrid container spacing={3}>
+                  <Grid item xs={12} md={4}>
+                    <BenefitCard>
+                      <BenefitCardTitle>
+                        Enhanced Energy Output
+                      </BenefitCardTitle>
+                      <BenefitCardText>
+                        Clean panels can increase energy production by up to 25%. Dirt, dust, and debris block sunlight from reaching the solar cells, reducing their efficiency. Regular cleaning ensures maximum power generation and optimal return on your investment.
+                      </BenefitCardText>
+                    </BenefitCard>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <BenefitCard>
+                      <BenefitCardTitle>
+                        Prolonged Panel Lifespan
+                      </BenefitCardTitle>
+                      <BenefitCardText>
+                        Regular maintenance prevents long-term damage from dirt accumulation and harsh environmental conditions. Our professional cleaning service helps protect your investment by extending the life of your solar panels and maintaining their warranty compliance.
+                      </BenefitCardText>
+                    </BenefitCard>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <BenefitCard>
+                      <BenefitCardTitle>
+                        Eco-friendly Solution
+                      </BenefitCardTitle>
+                      <BenefitCardText>
+                        We use environmentally safe cleaning methods and biodegradable products that are tough on dirt but gentle on your panels and the environment. By maximizing your panels' efficiency, we help reduce your carbon footprint even further.
+                      </BenefitCardText>
+                    </BenefitCard>
+                  </Grid>
+                </BenefitsGrid>
               </motion.div>
               <motion.div variants={itemVariants}>
                 <PricingContainer>
