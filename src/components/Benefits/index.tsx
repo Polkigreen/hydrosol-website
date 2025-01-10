@@ -191,6 +191,23 @@ const BenefitsGrid = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(6),
 }));
 
+const SubscriptionToggle = styled(ToggleButtonGroup)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginBottom: theme.spacing(4),
+  '& .MuiToggleButton-root': {
+    padding: theme.spacing(1, 4),
+    border: `2px solid ${theme.palette.primary.main}`,
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: '#fff',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.dark,
+      },
+    },
+  },
+}));
+
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -214,45 +231,72 @@ const itemVariants = {
 
 const Benefits: React.FC = () => {
   const { t } = useTranslation();
-  const [subscriptionMonths, setSubscriptionMonths] = useState(1);
+  const [subscriptionType, setSubscriptionType] = useState<'onetime' | 'yearly'>('onetime');
+
+  const handleSubscriptionChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newSubscription: 'onetime' | 'yearly',
+  ) => {
+    if (newSubscription !== null) {
+      setSubscriptionType(newSubscription);
+    }
+  };
 
   const plans = [
     {
       title: "Basic",
       price: 800,
-      yearlyPrice: 680,
-      features: [
+      yearlyPrice: 2000,
+      features: subscriptionType === 'onetime' ? [
         "Professional cleaning service",
         "Up to 20 panels",
         "Basic maintenance check",
-        "Scheduled appointments"
+        "Performance report",
+        "90-day guarantee"
+      ] : [
+        "3 professional cleanings per year",
+        "Up to 20 panels",
+        "Basic maintenance check",
+        "Performance report",
+        "Full year guarantee"
       ],
       popular: false
     },
     {
       title: "Standard",
       price: 1200,
-      yearlyPrice: 1020,
-      features: [
-        "Everything in Basic",
+      yearlyPrice: 3000,
+      features: subscriptionType === 'onetime' ? [
+        "Professional cleaning service",
         "Up to 30 panels",
         "Detailed inspection report",
-        "Priority scheduling",
-        "Performance monitoring"
+        "Performance monitoring",
+        "Priority scheduling"
+      ] : [
+        "3 professional cleanings per year",
+        "Up to 30 panels",
+        "Detailed inspection report",
+        "Performance monitoring",
+        "Priority scheduling"
       ],
       popular: true
     },
     {
       title: "Premium",
       price: 1600,
-      yearlyPrice: 1360,
-      features: [
-        "Everything in Standard",
+      yearlyPrice: 4000,
+      features: subscriptionType === 'onetime' ? [
+        "Professional cleaning service",
         "Up to 40 panels",
+        "Comprehensive inspection",
         "24/7 emergency support",
-        "Warranty protection",
-        "Annual efficiency report",
-        "Panel health monitoring"
+        "Warranty protection"
+      ] : [
+        "3 professional cleanings per year",
+        "Up to 40 panels",
+        "Comprehensive inspection",
+        "24/7 emergency support",
+        "Warranty protection"
       ],
       popular: false
     }
@@ -324,9 +368,20 @@ const Benefits: React.FC = () => {
                   <Typography variant="h3" align="center" gutterBottom>
                     Choose Your Plan
                   </Typography>
-                  <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
-                    Save 15% with yearly subscription
-                  </Typography>
+                  <SubscriptionToggle
+                    value={subscriptionType}
+                    exclusive
+                    onChange={handleSubscriptionChange}
+                    aria-label="subscription type"
+                    color="primary"
+                  >
+                    <ToggleButton value="onetime">
+                      One-time Service
+                    </ToggleButton>
+                    <ToggleButton value="yearly">
+                      Yearly Subscription
+                    </ToggleButton>
+                  </SubscriptionToggle>
                   <PricingGrid container spacing={3}>
                     {plans.map((plan) => (
                       <Grid item xs={12} md={4} key={plan.title}>
@@ -336,8 +391,10 @@ const Benefits: React.FC = () => {
                             {plan.title}
                           </Typography>
                           <PriceAmount>
-                            <span className="currency">SEK</span> {subscriptionMonths === 12 ? plan.yearlyPrice : plan.price}
-                            <span className="period">/month</span>
+                            <span className="currency">SEK</span> {subscriptionType === 'yearly' ? plan.yearlyPrice : plan.price}
+                            {subscriptionType === 'yearly' && <Typography variant="body2" color="textSecondary">
+                              (3 cleanings per year)
+                            </Typography>}
                           </PriceAmount>
                           <FeatureList>
                             {plan.features.map((feature, index) => (
