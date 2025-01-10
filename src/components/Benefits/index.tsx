@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import ImageComparisonSlider from '../ImageComparisonSlider';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 const IMAGES = {
   DIRTY: `${process.env.PUBLIC_URL}/dirty-panels.jpg`,
@@ -78,51 +79,50 @@ const PricingContainer = styled(Box)(({ theme }) => ({
   backgroundColor: '#fff',
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[8],
-  maxWidth: '800px',
+  maxWidth: '1200px',
   margin: '0 auto',
 }));
 
-const PricingTitle = styled(Typography)(({ theme }) => ({
-  textAlign: 'center',
-  marginBottom: theme.spacing(4),
-  fontSize: '2rem',
-  fontWeight: 600,
-}));
-
-const PricingOptionsContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: theme.spacing(2),
-  justifyContent: 'center',
-  marginBottom: theme.spacing(4),
-}));
-
-const PricingOption = styled(ToggleButton)(({ theme }) => ({
-  padding: theme.spacing(2, 4),
-  borderRadius: theme.shape.borderRadius,
-  '&.Mui-selected': {
-    backgroundColor: theme.palette.primary.main,
-    color: '#fff',
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-    },
-  },
-}));
-
-const SliderContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2, 4),
-  marginBottom: theme.spacing(4),
-}));
-
-const PriceDisplay = styled(Box)(({ theme }) => ({
-  textAlign: 'center',
+const PricingGrid = styled(Grid)(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
-const PriceText = styled(Typography)(({ theme }) => ({
+interface PricingCardProps {
+  selected?: boolean;
+  theme?: any;
+}
+
+const PricingCard = styled(Box)<PricingCardProps>(({ theme, selected }) => ({
+  padding: theme.spacing(4),
+  backgroundColor: selected ? theme.palette.primary.light + '10' : '#fff',
+  borderRadius: theme.shape.borderRadius,
+  border: `2px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
+  height: '100%',
+  position: 'relative',
+  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[4],
+  },
+}));
+
+const PopularBadge = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: -15,
+  right: 20,
+  backgroundColor: theme.palette.primary.main,
+  color: '#fff',
+  padding: theme.spacing(0.5, 2),
+  borderRadius: 20,
+  fontSize: '0.9rem',
+  fontWeight: 600,
+}));
+
+const PriceAmount = styled(Typography)(({ theme }) => ({
   fontSize: '2.5rem',
   fontWeight: 700,
   color: theme.palette.primary.main,
+  marginBottom: theme.spacing(2),
   '& .currency': {
     fontSize: '1.5rem',
     verticalAlign: 'super',
@@ -131,6 +131,26 @@ const PriceText = styled(Typography)(({ theme }) => ({
     fontSize: '1.2rem',
     color: theme.palette.text.secondary,
   },
+  '& .original': {
+    fontSize: '1.2rem',
+    color: theme.palette.text.secondary,
+    textDecoration: 'line-through',
+    marginRight: theme.spacing(1),
+  },
+}));
+
+const FeatureList = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+}));
+
+const Feature = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(2),
+  '& svg': {
+    marginRight: theme.spacing(1),
+    color: theme.palette.success.main,
+  },
 }));
 
 const SubscriptionButton = styled(Button)(({ theme }) => ({
@@ -138,34 +158,6 @@ const SubscriptionButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.5, 6),
   fontSize: '1.2rem',
 }));
-
-const containerVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      staggerChildren: 0.3,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 },
-  },
-};
-
-const PANEL_OPTIONS = [
-  { value: 'small', label: 'Small (1-10 panels)', basePrice: 800 },
-  { value: 'medium', label: 'Medium (11-20 panels)', basePrice: 1200 },
-  { value: 'large', label: 'Large (21-30 panels)', basePrice: 1600 },
-  { value: 'xlarge', label: 'Extra Large (31+ panels)', basePrice: 2000 },
-];
 
 const BenefitCard = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -199,26 +191,72 @@ const BenefitsGrid = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(6),
 }));
 
+const containerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      staggerChildren: 0.3,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
+};
+
 const Benefits: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedSize, setSelectedSize] = useState('small');
   const [subscriptionMonths, setSubscriptionMonths] = useState(1);
 
-  const handleSizeChange = (event: React.MouseEvent<HTMLElement>, newSize: string) => {
-    if (newSize !== null) {
-      setSelectedSize(newSize);
+  const plans = [
+    {
+      title: "Basic",
+      price: 800,
+      yearlyPrice: 680,
+      features: [
+        "Professional cleaning service",
+        "Up to 20 panels",
+        "Basic maintenance check",
+        "Scheduled appointments"
+      ],
+      popular: false
+    },
+    {
+      title: "Standard",
+      price: 1200,
+      yearlyPrice: 1020,
+      features: [
+        "Everything in Basic",
+        "Up to 30 panels",
+        "Detailed inspection report",
+        "Priority scheduling",
+        "Performance monitoring"
+      ],
+      popular: true
+    },
+    {
+      title: "Premium",
+      price: 1600,
+      yearlyPrice: 1360,
+      features: [
+        "Everything in Standard",
+        "Up to 40 panels",
+        "24/7 emergency support",
+        "Warranty protection",
+        "Annual efficiency report",
+        "Panel health monitoring"
+      ],
+      popular: false
     }
-  };
-
-  const handleSubscriptionChange = (event: Event, newValue: number | number[]) => {
-    setSubscriptionMonths(newValue as number);
-  };
-
-  const calculatePrice = () => {
-    const basePrice = PANEL_OPTIONS.find(option => option.value === selectedSize)?.basePrice || 0;
-    const discount = subscriptionMonths === 12 ? 0.15 : 0; // 15% discount for 12-month subscription
-    return basePrice * (1 - discount);
-  };
+  ];
 
   return (
     <BenefitsSection id="benefits">
@@ -283,56 +321,51 @@ const Benefits: React.FC = () => {
               </motion.div>
               <motion.div variants={itemVariants}>
                 <PricingContainer>
-                  <PricingTitle>
-                    We've got flexible options just for you. How many panels do you have?
-                  </PricingTitle>
-                  <PricingOptionsContainer>
-                    <ToggleButtonGroup
-                      value={selectedSize}
-                      exclusive
-                      onChange={handleSizeChange}
-                      aria-label="panel size"
-                    >
-                      {PANEL_OPTIONS.map((option) => (
-                        <PricingOption key={option.value} value={option.value}>
-                          {option.label}
-                        </PricingOption>
-                      ))}
-                    </ToggleButtonGroup>
-                  </PricingOptionsContainer>
-                  <SliderContainer>
-                    <Typography gutterBottom>
-                      Subscription Length: {subscriptionMonths === 1 ? 'One-time' : `${subscriptionMonths} months`}
-                      {subscriptionMonths === 12 && ' (15% discount)'}
+                  <Typography variant="h3" align="center" gutterBottom>
+                    Choose Your Plan
+                  </Typography>
+                  <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
+                    Save 15% with yearly subscription
+                  </Typography>
+                  <PricingGrid container spacing={3}>
+                    {plans.map((plan) => (
+                      <Grid item xs={12} md={4} key={plan.title}>
+                        <PricingCard selected={plan.popular}>
+                          {plan.popular && <PopularBadge>Most Popular</PopularBadge>}
+                          <Typography variant="h5" gutterBottom>
+                            {plan.title}
+                          </Typography>
+                          <PriceAmount>
+                            <span className="currency">SEK</span> {subscriptionMonths === 12 ? plan.yearlyPrice : plan.price}
+                            <span className="period">/month</span>
+                          </PriceAmount>
+                          <FeatureList>
+                            {plan.features.map((feature, index) => (
+                              <Feature key={index}>
+                                <CheckCircleOutline />
+                                <Typography>{feature}</Typography>
+                              </Feature>
+                            ))}
+                          </FeatureList>
+                          <SubscriptionButton
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            fullWidth
+                            href="#contact"
+                            sx={{ mt: 3 }}
+                          >
+                            Get Started
+                          </SubscriptionButton>
+                        </PricingCard>
+                      </Grid>
+                    ))}
+                  </PricingGrid>
+                  <Box sx={{ mt: 4, textAlign: 'center' }}>
+                    <Typography variant="body2" color="textSecondary">
+                      * All plans include our eco-friendly cleaning solution and professional service
                     </Typography>
-                    <Slider
-                      value={subscriptionMonths}
-                      onChange={handleSubscriptionChange}
-                      step={null}
-                      marks={[
-                        { value: 1, label: 'One-time' },
-                        { value: 12, label: '12 months' },
-                      ]}
-                      min={1}
-                      max={12}
-                    />
-                  </SliderContainer>
-                  <PriceDisplay>
-                    <PriceText>
-                      <span className="currency">SEK</span> {calculatePrice()}
-                      <span className="period">
-                        {subscriptionMonths === 1 ? '' : '/month'}
-                      </span>
-                    </PriceText>
-                    <SubscriptionButton
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      href="#contact"
-                    >
-                      Get Started
-                    </SubscriptionButton>
-                  </PriceDisplay>
+                  </Box>
                 </PricingContainer>
               </motion.div>
             </Grid>
