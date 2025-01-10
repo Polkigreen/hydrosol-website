@@ -5,6 +5,11 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import ImageComparisonSlider from '../ImageComparisonSlider';
 
+const IMAGES = {
+  DIRTY: `${process.env.PUBLIC_URL}/dirty-panels.jpg`,
+  CLEAN: `${process.env.PUBLIC_URL}/clean-panels.jpg`,
+};
+
 const BenefitsSection = styled(Box)(({ theme }) => ({
   minHeight: '80vh',
   padding: theme.spacing(6, 0),
@@ -82,8 +87,8 @@ const Benefits: React.FC = () => {
               </motion.div>
               <motion.div variants={itemVariants}>
                 <ImageComparisonSlider
-                  beforeImage="/dirty-panels.jpg"
-                  afterImage="/clean-panels.jpg"
+                  beforeImage={IMAGES.DIRTY}
+                  afterImage={IMAGES.CLEAN}
                   height={300}
                 />
               </motion.div>
