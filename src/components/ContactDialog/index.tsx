@@ -18,18 +18,30 @@ import {
   FormControl,
   FormLabel,
   Grid,
-  Alert
+  Alert,
+  Autocomplete
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+interface PlacePrediction {
+  description: string;
+  place_id: string;
+}
+
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(2),
-    maxWidth: 500,
+    maxWidth: 800,
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.divider}`,
   },
@@ -72,9 +84,11 @@ interface ContactDialogProps {
 }
 
 interface FormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
+  address: string;
   panels: string;
   date: Date | null;
   comments: string;
@@ -116,9 +130,11 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   subscriptionType: initialSubscriptionType,
 }) => {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
+    address: '',
     panels: '',
     date: null,
     comments: '',
@@ -141,6 +157,43 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [totalCost, setTotalCost] = useState(0);
   const [currentPlan, setCurrentPlan] = useState(selectedPlan || 'Basic');
+
+  const [addressPredictions, setAddressPredictions] = useState<string[]>([]);
+  const autocompleteService = React.useRef<any>(null);
+
+  useEffect(() => {
+    if (!autocompleteService.current && window.google) {
+      autocompleteService.current = new window.google.maps.places.AutocompleteService();
+    }
+  }, []);
+
+  const handleAddressChange = async (value: string) => {
+    setFormData(prev => ({ ...prev, address: value }));
+
+    if (!value || !autocompleteService.current) {
+      setAddressPredictions([]);
+      return;
+    }
+
+    try {
+      const response: { predictions: PlacePrediction[] } | null = await new Promise((resolve) => {
+        autocompleteService.current.getPlacePredictions(
+          {
+            input: value,
+            componentRestrictions: { country: 'se' }, // Restrict to Sweden
+            types: ['address']
+          },
+          resolve
+        );
+      });
+
+      if (response && response.predictions) {
+        setAddressPredictions(response.predictions.map(place => place.description));
+      }
+    } catch (error) {
+      console.error('Error fetching address predictions:', error);
+    }
+  };
 
   const calculatePackage = (panelCount: number) => {
     if (panelCount <= 20) return { plan: 'Basic', price: 800, yearlyPrice: 2000 };
@@ -176,11 +229,11 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // For regular form
       const emailContent = `
-        Name: ${formData.name}
+        Name: ${formData.firstName} ${formData.lastName}
         Email: ${formData.email}
         Phone: ${formData.phone}
+        Address: ${formData.address}
         Number of Panels: ${formData.panels}
         Location: ${formData.location}
         Installation Type: ${formData.isResidential ? 'Residential' : 'Commercial'}
@@ -191,8 +244,6 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
         Total Cost: ${totalCost} SEK
       `;
 
-      // Here you would typically send this to your backend
-      // For now, we'll use mailto
       window.location.href = `mailto:info@hydrosol.se?subject=New Service Request - ${currentPlan} Package&body=${encodeURIComponent(emailContent)}`;
       
       setSubmitStatus('success');
@@ -403,9 +454,9 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                 <TextField
                   fullWidth
                   required
-                  label="Name"
-                  name="name"
-                  value={formData.name}
+                  label="First Name"
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
                   margin="normal"
                 />
@@ -414,10 +465,9 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                 <TextField
                   fullWidth
                   required
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
+                  label="Last Name"
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
                   margin="normal"
                 />
@@ -437,6 +487,44 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                 <TextField
                   fullWidth
                   required
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Autocomplete
+                  freeSolo
+                  options={addressPredictions}
+                  value={formData.address}
+                  onChange={(_, newValue) => {
+                    setFormData(prev => ({ ...prev, address: newValue || '' }));
+                  }}
+                  onInputChange={(_, newValue) => {
+                    handleAddressChange(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      required
+                      label="Address"
+                      name="address"
+                      margin="normal"
+                    />
+                  )}
+                />
+                <Typography variant="caption" color="textSecondary">
+                  Start typing to search for your address in Sweden
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  required
                   label="Number of Panels"
                   name="panels"
                   type="number"
@@ -445,17 +533,6 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                   margin="normal"
                   helperText={currentPlan === 'Custom' ? 'Please contact us directly for more than 40 panels' : ''}
                   error={currentPlan === 'Custom'}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Installation Location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  margin="normal"
                 />
               </Grid>
               <Grid item xs={12} md={6}>
