@@ -310,131 +310,165 @@ const Benefits: React.FC = () => {
     }
   ];
 
+  const benefits = [
+    {
+      title: t('Up to 30% More Efficiency'),
+      description: t('Dirty solar panels can lose up to 30% of their efficiency. Regular cleaning ensures maximum energy production and return on your investment.')
+    },
+    {
+      title: t('Extend Panel Lifespan'),
+      description: t('Bird droppings, pollen, and other debris can cause permanent damage if left uncleaned. Professional cleaning helps protect your valuable investment.')
+    },
+    {
+      title: t('Proven ROI'),
+      description: t('Studies show that regular cleaning can pay for itself through increased energy production. Most customers see positive returns within the first year.')
+    },
+    {
+      title: t('Environmental Impact'),
+      description: t('Clean panels mean more green energy production. Help maximize your contribution to a sustainable future while saving money.')
+    }
+  ];
+
   return (
     <BenefitsSection id="benefits">
       <ContentWrapper maxWidth="lg">
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          animate="visible"
         >
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12}>
-              <motion.div variants={itemVariants}>
-                <BenefitText>{t('didYouKnow')}</BenefitText>
-                <BenefitText>{t('showDifference')}</BenefitText>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <ComparisonContainer>
-                  <ImageComparisonSlider
-                    beforeImage={IMAGES.DIRTY}
-                    afterImage={IMAGES.CLEAN}
-                    height={400}
-                  />
-                </ComparisonContainer>
-                <MessageText>
-                  Imagine saving hundreds on your energy bills—sounds good, right?
-                </MessageText>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <BenefitsGrid container spacing={3}>
-                  <Grid item xs={12} md={4}>
-                    <BenefitCard>
-                      <BenefitCardTitle>
-                        Enhanced Energy Output
-                      </BenefitCardTitle>
-                      <BenefitCardText>
-                        Clean panels can increase energy production by up to 25%. Dirt, dust, and debris block sunlight from reaching the solar cells, reducing their efficiency. Regular cleaning ensures maximum power generation and optimal return on your investment.
-                      </BenefitCardText>
-                    </BenefitCard>
+          <Typography variant="h2" align="center" gutterBottom>
+            {t('Why Clean Your Solar Panels?')}
+          </Typography>
+          
+          <BenefitsGrid container spacing={4}>
+            {benefits.map((benefit, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <motion.div variants={itemVariants}>
+                  <BenefitCard>
+                    <BenefitCardTitle>
+                      {benefit.title}
+                    </BenefitCardTitle>
+                    <BenefitCardText>
+                      {benefit.description}
+                    </BenefitCardText>
+                  </BenefitCard>
+                </motion.div>
+              </Grid>
+            ))}
+          </BenefitsGrid>
+
+          <ComparisonContainer>
+            <ImageComparisonSlider
+              beforeImage={IMAGES.DIRTY}
+              afterImage={IMAGES.CLEAN}
+              height={400}
+            />
+          </ComparisonContainer>
+
+          <MessageText>
+            {t('See the Difference Professional Cleaning Makes')}
+          </MessageText>
+          <SubMessageText>
+            {t('Maximize your energy production with our expert cleaning service')}
+          </SubMessageText>
+
+          <motion.div variants={itemVariants}>
+            <BenefitsGrid container spacing={3}>
+              <Grid item xs={12} md={4}>
+                <BenefitCard>
+                  <BenefitCardTitle>
+                    Enhanced Energy Output
+                  </BenefitCardTitle>
+                  <BenefitCardText>
+                    Clean panels can increase energy production by up to 25%. Dirt, dust, and debris block sunlight from reaching the solar cells, reducing their efficiency. Regular cleaning ensures maximum power generation and optimal return on your investment.
+                  </BenefitCardText>
+                </BenefitCard>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <BenefitCard>
+                  <BenefitCardTitle>
+                    Prolonged Panel Lifespan
+                  </BenefitCardTitle>
+                  <BenefitCardText>
+                    Regular maintenance prevents long-term damage from dirt accumulation and harsh environmental conditions. Our professional cleaning service helps protect your investment by extending the life of your solar panels and maintaining their warranty compliance.
+                  </BenefitCardText>
+                </BenefitCard>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <BenefitCard>
+                  <BenefitCardTitle>
+                    Eco-friendly Solution
+                  </BenefitCardTitle>
+                  <BenefitCardText>
+                    We use environmentally safe cleaning methods and biodegradable products that are tough on dirt but gentle on your panels and the environment. By maximizing your panels' efficiency, we help reduce your carbon footprint even further.
+                  </BenefitCardText>
+                </BenefitCard>
+              </Grid>
+            </BenefitsGrid>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <PricingContainer>
+              <Typography variant="h3" align="center" gutterBottom>
+                Choose Your Plan
+              </Typography>
+              <SubscriptionToggle
+                value={subscriptionType}
+                exclusive
+                onChange={handleSubscriptionChange}
+                aria-label="subscription type"
+                color="primary"
+              >
+                <ToggleButton value="onetime">
+                  One-time Service
+                </ToggleButton>
+                <ToggleButton value="yearly">
+                  Yearly Subscription
+                </ToggleButton>
+              </SubscriptionToggle>
+              <PricingGrid container spacing={3}>
+                {plans.map((plan) => (
+                  <Grid item xs={12} md={4} key={plan.title}>
+                    <PricingCard selected={plan.popular}>
+                      {plan.popular && <PopularBadge>Most Popular</PopularBadge>}
+                      <Typography variant="h5" gutterBottom>
+                        {plan.title}
+                      </Typography>
+                      <PriceAmount>
+                        <span className="currency">SEK</span> {subscriptionType === 'yearly' ? plan.yearlyPrice : plan.price}
+                        {subscriptionType === 'yearly' && <Typography variant="body2" color="textSecondary">
+                          (3 cleanings per year)
+                        </Typography>}
+                      </PriceAmount>
+                      <FeatureList>
+                        {plan.features.map((feature, index) => (
+                          <Feature key={index}>
+                            <CheckCircleOutline />
+                            <Typography>{feature}</Typography>
+                          </Feature>
+                        ))}
+                      </FeatureList>
+                      <SubscriptionButton
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        fullWidth
+                        onClick={() => handleGetStarted(plan.title)}
+                        sx={{ mt: 3 }}
+                      >
+                        Get Started
+                      </SubscriptionButton>
+                    </PricingCard>
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <BenefitCard>
-                      <BenefitCardTitle>
-                        Prolonged Panel Lifespan
-                      </BenefitCardTitle>
-                      <BenefitCardText>
-                        Regular maintenance prevents long-term damage from dirt accumulation and harsh environmental conditions. Our professional cleaning service helps protect your investment by extending the life of your solar panels and maintaining their warranty compliance.
-                      </BenefitCardText>
-                    </BenefitCard>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <BenefitCard>
-                      <BenefitCardTitle>
-                        Eco-friendly Solution
-                      </BenefitCardTitle>
-                      <BenefitCardText>
-                        We use environmentally safe cleaning methods and biodegradable products that are tough on dirt but gentle on your panels and the environment. By maximizing your panels' efficiency, we help reduce your carbon footprint even further.
-                      </BenefitCardText>
-                    </BenefitCard>
-                  </Grid>
-                </BenefitsGrid>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <PricingContainer>
-                  <Typography variant="h3" align="center" gutterBottom>
-                    Choose Your Plan
-                  </Typography>
-                  <SubscriptionToggle
-                    value={subscriptionType}
-                    exclusive
-                    onChange={handleSubscriptionChange}
-                    aria-label="subscription type"
-                    color="primary"
-                  >
-                    <ToggleButton value="onetime">
-                      One-time Service
-                    </ToggleButton>
-                    <ToggleButton value="yearly">
-                      Yearly Subscription
-                    </ToggleButton>
-                  </SubscriptionToggle>
-                  <PricingGrid container spacing={3}>
-                    {plans.map((plan) => (
-                      <Grid item xs={12} md={4} key={plan.title}>
-                        <PricingCard selected={plan.popular}>
-                          {plan.popular && <PopularBadge>Most Popular</PopularBadge>}
-                          <Typography variant="h5" gutterBottom>
-                            {plan.title}
-                          </Typography>
-                          <PriceAmount>
-                            <span className="currency">SEK</span> {subscriptionType === 'yearly' ? plan.yearlyPrice : plan.price}
-                            {subscriptionType === 'yearly' && <Typography variant="body2" color="textSecondary">
-                              (3 cleanings per year)
-                            </Typography>}
-                          </PriceAmount>
-                          <FeatureList>
-                            {plan.features.map((feature, index) => (
-                              <Feature key={index}>
-                                <CheckCircleOutline />
-                                <Typography>{feature}</Typography>
-                              </Feature>
-                            ))}
-                          </FeatureList>
-                          <SubscriptionButton
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            fullWidth
-                            onClick={() => handleGetStarted(plan.title)}
-                            sx={{ mt: 3 }}
-                          >
-                            Get Started
-                          </SubscriptionButton>
-                        </PricingCard>
-                      </Grid>
-                    ))}
-                  </PricingGrid>
-                  <Box sx={{ mt: 4, textAlign: 'center' }}>
-                    <Typography variant="body2" color="textSecondary">
-                      * All plans include our eco-friendly cleaning solution and professional service
-                    </Typography>
-                  </Box>
-                </PricingContainer>
-              </motion.div>
-            </Grid>
-          </Grid>
+                ))}
+              </PricingGrid>
+              <Box sx={{ mt: 4, textAlign: 'center' }}>
+                <Typography variant="body2" color="textSecondary">
+                  * All plans include our eco-friendly cleaning solution and professional service
+                </Typography>
+              </Box>
+            </PricingContainer>
+          </motion.div>
         </motion.div>
       </ContentWrapper>
       <ContactDialog
