@@ -95,7 +95,6 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
-  address: string;
   addressDetails: {
     formattedAddress: string;
     location: {
@@ -156,7 +155,6 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
     lastName: '',
     email: '',
     phone: '',
-    address: '',
     addressDetails: {
       formattedAddress: '',
       location: {
@@ -256,23 +254,28 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const emailContent = `
-        Name: ${formData.firstName} ${formData.lastName}
-        Email: ${formData.email}
-        Phone: ${formData.phone}
-        Address: ${formData.address}
-        Number of Panels: ${formData.panels}
-        Location: ${formData.location}
-        Installation Type: ${formData.isResidential ? 'Residential' : 'Commercial'}
-        Service Type: ${formData.subscriptionType}
-        Preferred Date: ${formData.date?.toLocaleDateString()}
-        Comments: ${formData.comments}
-        Selected Plan: ${currentPlan}
-        Total Cost: ${totalCost} SEK
-      `;
+    setSubmitStatus('idle');
 
-      window.location.href = `mailto:info@hydrosol.se?subject=New Service Request - ${currentPlan} Package&body=${encodeURIComponent(emailContent)}`;
+    const emailContent = [
+      'New Installation Request',
+      '----------------------',
+      `Name: ${formData.firstName} ${formData.lastName}`,
+      `Email: ${formData.email}`,
+      `Phone: ${formData.phone}`,
+      `Address: ${formData.addressDetails.formattedAddress}`,
+      `Number of Panels: ${formData.panels}`,
+      `Installation Type: ${formData.isResidential ? 'Residential' : 'Commercial'}`,
+      `Subscription: ${formData.subscriptionType}`,
+      `Preferred Date: ${formData.date ? formData.date.toLocaleDateString() : 'Not specified'}`,
+      `Comments: ${formData.comments}`,
+      `Selected Plan: ${currentPlan}`,
+      `Total Cost: ${totalCost} SEK`,
+    ].join('\n');
+
+    try {
+      // Here you would implement the actual email sending logic
+      // For example, using an API endpoint or email service
+      console.log('Sending email to info@hydrosol.se:', emailContent);
       
       setSubmitStatus('success');
       setTimeout(() => {
@@ -280,28 +283,30 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
         setSubmitStatus('idle');
       }, 2000);
     } catch (error) {
+      console.error('Error sending email:', error);
       setSubmitStatus('error');
     }
   };
 
   const handleCustomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitStatus('idle');
+
+    const customEmailContent = [
+      'Large Installation Request',
+      '----------------------',
+      `Name: ${customFormData.name}`,
+      `Email: ${customFormData.email}`,
+      `Phone: ${customFormData.phone}`,
+      `Number of Panels: ${customFormData.panels}`,
+      `Location: ${customFormData.location}`,
+      `Installation Type: ${customFormData.installationType}`,
+      `Project Details: ${customFormData.projectDetails}`,
+    ].join('\n');
+
     try {
-      // For custom form (>40 panels)
-      const emailContent = `
-        Large Installation Request
-
-        Name: ${customFormData.name}
-        Email: ${customFormData.email}
-        Phone: ${customFormData.phone}
-        Number of Panels: ${customFormData.panels}
-        Location: ${customFormData.location}
-        Installation Type: ${customFormData.installationType}
-        Project Details: ${customFormData.projectDetails}
-      `;
-
-      // Using mailto for now
-      window.location.href = `mailto:info@hydrosol.se?subject=Large Installation Request&body=${encodeURIComponent(emailContent)}`;
+      // Here you would implement the actual email sending logic
+      console.log('Sending email to info@hydrosol.se:', customEmailContent);
       
       setSubmitStatus('success');
       setTimeout(() => {
@@ -309,6 +314,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
         setSubmitStatus('idle');
       }, 2000);
     } catch (error) {
+      console.error('Error sending email:', error);
       setSubmitStatus('error');
     }
   };
@@ -349,12 +355,10 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   }, [formData.addressDetails.location]);
 
   const handlePlaceChange = (event: any) => {
-    const place = event.target.value;
-    
-    if (place && place.location) {
+    const place = event.detail;
+    if (place) {
       setFormData(prev => ({
         ...prev,
-        address: place.formattedAddress,
         addressDetails: {
           formattedAddress: place.formattedAddress,
           location: {
@@ -562,14 +566,11 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
               <Grid item xs={12}>
                 <Box>
                   <gmpx-place-picker
-                    id="place-picker"
+                    onPlaceChange={handlePlaceChange}
+                    style={{ width: '100%' }}
                     placeholder="Enter your address"
-                    onGmpxPlacechange={handlePlaceChange}
-                    style={{ width: '100%', marginBottom: '8px' }}
-                  ></gmpx-place-picker>
-                  <Typography variant="caption" color="textSecondary">
-                    Start typing to search for your address in Sweden
-                  </Typography>
+                    required
+                  />
                   <MapContainer id="map-container" />
                 </Box>
               </Grid>
