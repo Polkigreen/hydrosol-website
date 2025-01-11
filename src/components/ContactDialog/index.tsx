@@ -30,6 +30,13 @@ declare global {
   interface Window {
     google: any;
   }
+  namespace JSX {
+    interface IntrinsicElements {
+      'gmpx-place-picker': any;
+      'gmp-map': any;
+      'gmp-advanced-marker': any;
+    }
+  }
 }
 
 interface PlacePrediction {
@@ -89,10 +96,16 @@ interface FormData {
   email: string;
   phone: string;
   address: string;
+  addressDetails: {
+    formattedAddress: string;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
   panels: string;
   date: Date | null;
   comments: string;
-  location: string;
   isResidential: boolean;
   subscriptionType: 'onetime' | 'yearly';
 }
@@ -123,6 +136,15 @@ const CustomForm = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
 }));
 
+const MapContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  height: '200px',
+  width: '100%',
+  borderRadius: theme.shape.borderRadius,
+  overflow: 'hidden',
+  border: `1px solid ${theme.palette.divider}`,
+}));
+
 const ContactDialog: React.FC<ContactDialogProps> = ({
   open,
   onClose,
@@ -135,10 +157,16 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
     email: '',
     phone: '',
     address: '',
+    addressDetails: {
+      formattedAddress: '',
+      location: {
+        lat: 59.3293, // Stockholm coordinates as default
+        lng: 18.0686
+      }
+    },
     panels: '',
     date: null,
     comments: '',
-    location: '',
     isResidential: true,
     subscriptionType: initialSubscriptionType || 'onetime',
   });
@@ -300,6 +328,42 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
       ...prev,
       subscriptionType: prev.subscriptionType === 'onetime' ? 'yearly' : 'onetime'
     }));
+  };
+
+  useEffect(() => {
+    // Initialize map when component mounts
+    const mapElement = document.createElement('gmp-map');
+    const markerElement = document.createElement('gmp-advanced-marker');
+    const mapContainer = document.getElementById('map-container');
+
+    if (mapContainer && window.google) {
+      mapElement.setAttribute('center', `${formData.addressDetails.location.lat},${formData.addressDetails.location.lng}`);
+      mapElement.setAttribute('zoom', '13');
+      mapElement.setAttribute('map-id', 'DEMO_MAP_ID');
+      
+      markerElement.setAttribute('position', `${formData.addressDetails.location.lat},${formData.addressDetails.location.lng}`);
+      mapElement.appendChild(markerElement);
+      
+      mapContainer.appendChild(mapElement);
+    }
+  }, [formData.addressDetails.location]);
+
+  const handlePlaceChange = (event: any) => {
+    const place = event.target.value;
+    
+    if (place && place.location) {
+      setFormData(prev => ({
+        ...prev,
+        address: place.formattedAddress,
+        addressDetails: {
+          formattedAddress: place.formattedAddress,
+          location: {
+            lat: place.location.lat,
+            lng: place.location.lng
+          }
+        }
+      }));
+    }
   };
 
   if (showCustomForm) {
@@ -496,30 +560,18 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                 />
               </Grid>
               <Grid item xs={12}>
-                <Autocomplete
-                  freeSolo
-                  options={addressPredictions}
-                  value={formData.address}
-                  onChange={(_, newValue) => {
-                    setFormData(prev => ({ ...prev, address: newValue || '' }));
-                  }}
-                  onInputChange={(_, newValue) => {
-                    handleAddressChange(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      required
-                      label="Address"
-                      name="address"
-                      margin="normal"
-                    />
-                  )}
-                />
-                <Typography variant="caption" color="textSecondary">
-                  Start typing to search for your address in Sweden
-                </Typography>
+                <Box>
+                  <gmpx-place-picker
+                    id="place-picker"
+                    placeholder="Enter your address"
+                    onGmpxPlacechange={handlePlaceChange}
+                    style={{ width: '100%', marginBottom: '8px' }}
+                  ></gmpx-place-picker>
+                  <Typography variant="caption" color="textSecondary">
+                    Start typing to search for your address in Sweden
+                  </Typography>
+                  <MapContainer id="map-container" />
+                </Box>
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
