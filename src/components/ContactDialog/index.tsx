@@ -28,7 +28,20 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 declare global {
   interface Window {
-    google: any;
+    google: {
+      maps: {
+        places: {
+          AutocompleteService: new () => any;
+          AutocompletePrediction: {
+            description: string;
+            place_id: string;
+          };
+          PlacesServiceStatus: {
+            OK: string;
+          };
+        };
+      };
+    };
   }
   namespace JSX {
     interface IntrinsicElements {
@@ -39,9 +52,43 @@ declare global {
   }
 }
 
-interface PlacePrediction {
-  description: string;
-  place_id: string;
+type PlacesServiceStatus = 'OK' | 'ZERO_RESULTS' | 'OVER_QUERY_LIMIT' | 'REQUEST_DENIED' | 'INVALID_REQUEST';
+type AutocompletePrediction = Window['google']['maps']['places']['AutocompletePrediction'];
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  addressDetails: {
+    formattedAddress: string;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  panels: string;
+  date: Date | null;
+  comments: string;
+  isResidential: boolean;
+  subscriptionType: 'onetime' | 'yearly';
+}
+
+interface ContactDialogProps {
+  open: boolean;
+  onClose: () => void;
+  selectedPlan?: string;
+  subscriptionType?: 'onetime' | 'yearly';
+}
+
+interface CustomFormData {
+  name: string;
+  email: string;
+  phone: string;
+  panels: string;
+  location: string;
+  installationType: string;
+  projectDetails: string;
 }
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -82,42 +129,6 @@ const StyledDialogActions = styled(MuiDialogActions)(({ theme }) => ({
   borderTop: `1px solid ${theme.palette.divider}`,
   marginTop: theme.spacing(2),
 }));
-
-interface ContactDialogProps {
-  open: boolean;
-  onClose: () => void;
-  selectedPlan?: string;
-  subscriptionType?: 'onetime' | 'yearly';
-}
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  addressDetails: {
-    formattedAddress: string;
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-  panels: string;
-  date: Date | null;
-  comments: string;
-  isResidential: boolean;
-  subscriptionType: 'onetime' | 'yearly';
-}
-
-interface CustomFormData {
-  name: string;
-  email: string;
-  phone: string;
-  panels: string;
-  location: string;
-  installationType: string;
-  projectDetails: string;
-}
 
 const CostSummary = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
@@ -188,36 +199,40 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   const autocompleteService = React.useRef<any>(null);
 
   useEffect(() => {
-    if (!autocompleteService.current && window.google) {
+    // Initialize Google Maps services when the component mounts
+    if (window.google && window.google.maps) {
       autocompleteService.current = new window.google.maps.places.AutocompleteService();
     }
   }, []);
 
   const handleAddressChange = async (value: string) => {
-    setFormData(prev => ({ ...prev, address: value }));
-
     if (!value || !autocompleteService.current) {
       setAddressPredictions([]);
       return;
     }
 
     try {
-      const response: { predictions: PlacePrediction[] } | null = await new Promise((resolve) => {
+      const response = await new Promise<AutocompletePrediction[]>((resolve, reject) => {
         autocompleteService.current.getPlacePredictions(
           {
             input: value,
-            componentRestrictions: { country: 'se' }, // Restrict to Sweden
+            componentRestrictions: { country: 'se' },
             types: ['address']
           },
-          resolve
+          (predictions: AutocompletePrediction[] | null, status: PlacesServiceStatus) => {
+            if (status === 'OK' && predictions) {
+              resolve(predictions);
+            } else {
+              reject(status);
+            }
+          }
         );
       });
 
-      if (response && response.predictions) {
-        setAddressPredictions(response.predictions.map(place => place.description));
-      }
+      setAddressPredictions(response.map(place => place.description));
     } catch (error) {
       console.error('Error fetching address predictions:', error);
+      setAddressPredictions([]);
     }
   };
 
