@@ -14,41 +14,43 @@ const HeroContainer = styled(Box)(({ theme }) => ({
     ${theme.palette.background.paper}, 
     ${theme.palette.primary.light}99
   )`,
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundImage: 'url(/hero-background.mp4)',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    zIndex: -1,
-  },
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.15,
-    zIndex: -1,
-    backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.palette.primary.main} 1px, transparent 0)`,
-    backgroundSize: '40px 40px',
-  }
+  overflow: 'hidden',
+}));
+
+const VideoBackground = styled('video')({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  minWidth: '100%',
+  minHeight: '100%',
+  width: 'auto',
+  height: 'auto',
+  transform: 'translateX(-50%) translateY(-50%)',
+  zIndex: -1,
+  objectFit: 'cover',
+});
+
+const Overlay = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  opacity: 0.15,
+  zIndex: -1,
+  backgroundImage: `radial-gradient(circle at 1px 1px, ${theme.palette.primary.main} 1px, transparent 0)`,
+  backgroundSize: '40px 40px',
 }));
 
 const ContentContainer = styled(Container)(({ theme }) => ({
   textAlign: 'center',
   zIndex: 1,
+  position: 'relative',
 }));
 
 const StartButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(3),
   padding: theme.spacing(1.5, 4),
-  fontSize: '1.1rem',
 }));
 
 const Hero: React.FC = () => {
@@ -63,6 +65,16 @@ const Hero: React.FC = () => {
 
   return (
     <HeroContainer>
+      <VideoBackground
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/clean-panels.jpg"
+      >
+        <source src="/hero-background.mp4" type="video/mp4" />
+      </VideoBackground>
+      <Overlay />
       <ContentContainer maxWidth="md">
         <Typography
           variant="h1"

@@ -25,6 +25,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ServiceType } from '../../types/scheduling';
 
 declare global {
   interface Window {
@@ -60,25 +61,23 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
-  addressDetails: {
-    formattedAddress: string;
-    location: {
-      lat: number;
-      lng: number;
-    };
+  address: string;
+  location: {
+    lat: number;
+    lng: number;
   };
-  panels: string;
+  panelCount: string;
+  isResidential: boolean;
+  subscriptionType: ServiceType;
   date: Date | null;
   comments: string;
-  isResidential: boolean;
-  subscriptionType: 'onetime' | 'yearly';
 }
 
 interface ContactDialogProps {
   open: boolean;
   onClose: () => void;
-  selectedPlan?: string;
-  subscriptionType?: 'onetime' | 'yearly';
+  initialPanelCount?: number;
+  initialSubscriptionType?: ServiceType;
 }
 
 interface CustomFormData {
@@ -158,26 +157,24 @@ const MapContainer = styled(Box)(({ theme }) => ({
 const ContactDialog: React.FC<ContactDialogProps> = ({
   open,
   onClose,
-  selectedPlan,
-  subscriptionType: initialSubscriptionType,
+  initialPanelCount,
+  initialSubscriptionType,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    addressDetails: {
-      formattedAddress: '',
-      location: {
-        lat: 59.3293, // Stockholm coordinates as default
-        lng: 18.0686
-      }
+    address: '',
+    location: {
+      lat: 0,
+      lng: 0,
     },
-    panels: '',
+    panelCount: initialPanelCount?.toString() || '',
+    isResidential: true,
+    subscriptionType: initialSubscriptionType || 'ONETIME',
     date: null,
     comments: '',
-    isResidential: true,
-    subscriptionType: initialSubscriptionType || 'onetime',
   });
 
   const [customFormData, setCustomFormData] = useState<CustomFormData>({
@@ -193,7 +190,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [totalCost, setTotalCost] = useState(0);
-  const [currentPlan, setCurrentPlan] = useState(selectedPlan || 'Basic');
+  const [currentPlan, setCurrentPlan] = useState('Basic');
 
   const [addressPredictions, setAddressPredictions] = useState<string[]>([]);
   const autocompleteService = React.useRef<any>(null);
@@ -243,29 +240,21 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
     return { plan: 'Custom', price: 0, yearlyPrice: 0 };
   };
 
-  const calculateTotalCost = () => {
-    const panelCount = parseInt(formData.panels) || 0;
-    const { price, yearlyPrice, plan } = calculatePackage(panelCount);
-    setCurrentPlan(plan);
+  const calculateCost = () => {
+    const panelCount = parseInt(formData.panelCount) || 0;
+    const { price, yearlyPrice } = calculatePackage(panelCount);
+    let cost = formData.subscriptionType === 'YEARLY' ? yearlyPrice : price;
 
-    if (plan === 'Custom') {
-      setTotalCost(0);
-      return;
-    }
-
-    let cost = formData.subscriptionType === 'yearly' ? yearlyPrice : price;
-    
-    // Add residential equipment fee if applicable
     if (formData.isResidential) {
       cost += 175;
     }
 
-    setTotalCost(cost);
+    return cost;
   };
 
   useEffect(() => {
-    calculateTotalCost();
-  }, [formData.panels, formData.isResidential, formData.subscriptionType]);
+    setTotalCost(calculateCost());
+  }, [formData.panelCount, formData.isResidential, formData.subscriptionType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -277,8 +266,8 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
       `Name: ${formData.firstName} ${formData.lastName}`,
       `Email: ${formData.email}`,
       `Phone: ${formData.phone}`,
-      `Address: ${formData.addressDetails.formattedAddress}`,
-      `Number of Panels: ${formData.panels}`,
+      `Address: ${formData.address}`,
+      `Number of Panels: ${formData.panelCount}`,
       `Installation Type: ${formData.isResidential ? 'Residential' : 'Commercial'}`,
       `Subscription: ${formData.subscriptionType}`,
       `Preferred Date: ${formData.date ? formData.date.toLocaleDateString() : 'Not specified'}`,
@@ -347,7 +336,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
   const handleSubscriptionToggle = () => {
     setFormData(prev => ({
       ...prev,
-      subscriptionType: prev.subscriptionType === 'onetime' ? 'yearly' : 'onetime'
+      subscriptionType: prev.subscriptionType === 'ONETIME' ? 'YEARLY' : 'ONETIME'
     }));
   };
 
@@ -358,28 +347,26 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
     const mapContainer = document.getElementById('map-container');
 
     if (mapContainer && window.google) {
-      mapElement.setAttribute('center', `${formData.addressDetails.location.lat},${formData.addressDetails.location.lng}`);
+      mapElement.setAttribute('center', `${formData.location.lat},${formData.location.lng}`);
       mapElement.setAttribute('zoom', '13');
       mapElement.setAttribute('map-id', 'DEMO_MAP_ID');
       
-      markerElement.setAttribute('position', `${formData.addressDetails.location.lat},${formData.addressDetails.location.lng}`);
+      markerElement.setAttribute('position', `${formData.location.lat},${formData.location.lng}`);
       mapElement.appendChild(markerElement);
       
       mapContainer.appendChild(mapElement);
     }
-  }, [formData.addressDetails.location]);
+  }, [formData.location]);
 
   const handlePlaceChange = (event: any) => {
     const place = event.detail;
     if (place) {
       setFormData(prev => ({
         ...prev,
-        addressDetails: {
-          formattedAddress: place.formattedAddress,
-          location: {
-            lat: place.location.lat,
-            lng: place.location.lng
-          }
+        address: place.formattedAddress,
+        location: {
+          lat: place.location.lat,
+          lng: place.location.lng
         }
       }));
     }
@@ -527,7 +514,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
             Get Started with {currentPlan}
           </Typography>
           <Typography variant="subtitle1" align="center" color="textSecondary">
-            {formData.subscriptionType === 'yearly' ? 'Yearly Subscription' : 'One-time Service'}
+            {formData.subscriptionType === 'YEARLY' ? 'Yearly Subscription' : 'One-time Service'}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -594,9 +581,9 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                   fullWidth
                   required
                   label="Number of Panels"
-                  name="panels"
+                  name="panelCount"
                   type="number"
-                  value={formData.panels}
+                  value={formData.panelCount}
                   onChange={handleChange}
                   margin="normal"
                   helperText={currentPlan === 'Custom' ? 'Please contact us directly for more than 40 panels' : ''}
@@ -640,11 +627,11 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
               <FormControlLabel
                 control={
                   <Switch
-                    checked={formData.subscriptionType === 'yearly'}
+                    checked={formData.subscriptionType === 'YEARLY'}
                     onChange={handleSubscriptionToggle}
                   />
                 }
-                label={formData.subscriptionType === 'yearly' ? 'Yearly Subscription' : 'One-time Service'}
+                label={formData.subscriptionType === 'YEARLY' ? 'Yearly Subscription' : 'One-time Service'}
               />
             </Box>
 
@@ -679,7 +666,7 @@ const ContactDialog: React.FC<ContactDialogProps> = ({
                 <Typography variant="h6">Total Cost:</Typography>
                 <Typography variant="h6">{totalCost > 0 ? `${totalCost} SEK` : 'Contact us'}</Typography>
               </Box>
-              {formData.subscriptionType === 'yearly' && (
+              {formData.subscriptionType === 'YEARLY' && (
                 <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                   *Includes 3 cleanings per year
                 </Typography>
